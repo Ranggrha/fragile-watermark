@@ -8,11 +8,87 @@ from metrics import ber, nc, psnr
 from watermark import embed, logo_to_wm, tamper_overlay, text_to_wm, verify
 
 st.set_page_config("Fragile Watermarking", layout="wide")
+
+if not st.session_state.get("show_app", False):
+    st.markdown("""
+    <style>
+    .stApp {
+        background: #07131f;
+        overflow: hidden;
+    }
+    .stApp::before {
+        content: "";
+        position: fixed;
+        inset: -20%;
+        z-index: 0;
+        opacity: 0.6;
+        background:
+            linear-gradient(125deg, rgba(23, 111, 125, 0.9), transparent 45%),
+            linear-gradient(235deg, rgba(219, 104, 55, 0.8), transparent 42%),
+            linear-gradient(45deg, #07131f 20%, #164254 55%, #7c3f31 100%);
+        background-size: 180% 180%;
+        animation: watermark-drift 14s ease-in-out infinite alternate;
+    }
+    .stApp > header {
+        background: transparent;
+    }
+    .landing-content {
+        position: relative;
+        z-index: 1;
+        min-height: 68vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    .landing-kicker {
+        margin-bottom: 1rem;
+        color: #b7d8d6;
+        font-size: 0.82rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+    }
+    .landing-title {
+        margin: 0;
+        color: #f4f0e8;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2.8rem, 7vw, 6.5rem);
+        font-weight: 400;
+        line-height: 0.98;
+    }
+    .landing-subtitle {
+        max-width: 38rem;
+        margin: 1.4rem auto 2.2rem;
+        color: #d1dfdc;
+        font-size: 1rem;
+    }
+    @keyframes watermark-drift {
+        0% { transform: translate3d(-3%, -2%, 0) scale(1); background-position: 0% 50%; }
+        100% { transform: translate3d(3%, 2%, 0) scale(1.08); background-position: 100% 50%; }
+    }
+    </style>
+    <main class="landing-content">
+        <div class="landing-kicker">Fragile watermarking</div>
+        <h1 class="landing-title">Manipulasi Citra<br>LSB + HMAC</h1>
+        <p class="landing-subtitle">Sisipkan watermark kepemilikan dan deteksi manipulasi citra secara presisi.</p>
+    </main>
+    """, unsafe_allow_html=True)
+    _, enter_col, _ = st.columns([1, 1.2, 1])
+    with enter_col:
+        if st.button("Masuk ke Aplikasi", type="primary", use_container_width=True, key="open_app"):
+            st.session_state.show_app = True
+            st.rerun()
+    st.stop()
+
 st.title("Fragile Watermarking LSB + HMAC: Deteksi Manipulasi Citra")
 load = lambda f: Image.open(f).convert("RGB")
 TYPES = ["png", "bmp", "jpg", "jpeg"]
 
 with st.sidebar:
+    if st.button("Halaman Awal", key="home_button"):
+        st.session_state.show_app = False
+        st.rerun()
     key = st.text_input("Kunci rahasia", type="password")
     mode = st.radio("Watermark", ["Teks / NPM", "Logo biner"])
     if mode.startswith("Teks"):
