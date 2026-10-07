@@ -2,7 +2,6 @@
 
 Aplikasi web (Streamlit) untuk menyisipkan watermark kepemilikan dan mendeteksi manipulasi citra beserta peta area yang diubah.
 
-**Anggota:** Nama - NPM (isi sendiri)
 
 ## Instalasi
 ```
